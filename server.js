@@ -105,7 +105,7 @@ process.env.TNS_ADMIN = walletPath;
 
 // Resolver el identificador de conexión
 const tnsIdentifier = process.env.ORACLE_TNS || process.env.DB_CONNECT_STRING || '';
-const connectString = resolveConnectIdentifier(tnsIdentifier, path.join(walletPath, 'tnsnames.ora'));
+const connectString = tnsIdentifier;
 
 console.log('📁 Wallet en:', walletPath);
 console.log('🔗 Connect identifier:', connectString);
