@@ -195,7 +195,7 @@ app.post('/api/login', async (req, res) => {
        FROM ADMIN.USUARIO u
        WHERE u.username = :username 
          AND u.password = :password
-         AND UPPER(u.estado) = 'ACTIVO'`,
+         AND UPPER(u.estado) = 'Activo'`,
       [username, password]
     );
 
