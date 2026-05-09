@@ -132,7 +132,12 @@ if (isWindows) {
     process.exit(1);
   }
 } else {
-  console.log('🐧 Linux/Railway - omitiendo initOracleClient');
+  try {
+    oracledb.initOracleClient({ libDir: '/opt/oracle/instantclient_21_10' });
+    console.log('✅ Oracle Client inicializado (Linux)');
+  } catch (e) {
+    console.error('❌ Error al iniciar Oracle Client en Linux:', e.message);
+  }
 }
 
 // ========================
