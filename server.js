@@ -122,3 +122,76 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
   console.log('📁 Wallet en:', walletPath);
 });
+app.post('/api/login', async (req, res) => {
+  let connection;
+
+  try {
+    const { usuario, contrasena } = req.body;
+
+    if (!usuario || !contrasena) {
+      return res.status(400).json({
+        exito: false,
+        mensaje: 'Usuario y contraseña son obligatorios'
+      });
+    }
+
+    connection = await oracledb.getConnection(dbConfig);
+
+    const result = await connection.execute(
+      `
+      SELECT
+        ID_USUARIO,
+        USERNAME,
+        ID_TIPO,
+        ESTADO,
+        ID_PERSONA,
+        NOMBRES,
+        APELLIDOS,
+        CORREO,
+        TELEFONO,
+        DIRECCION
+      FROM V_USUARIO_COMPLETO
+      WHERE USERNAME = :usuario
+      AND PASSWORD = :contrasena
+      AND UPPER(ESTADO) = 'ACTIVO'
+      `,
+      {
+        usuario,
+        contrasena
+      },
+      {
+        outFormat: oracledb.OUT_FORMAT_OBJECT
+      }
+    );
+
+    if (result.rows.length > 0) {
+      return res.json({
+        exito: true,
+        mensaje: 'Login correcto',
+        usuario: result.rows[0]
+      });
+    }
+
+    return res.status(401).json({
+      exito: false,
+      mensaje: 'Usuario o contraseña incorrectos'
+    });
+
+  } catch (err) {
+    console.error('❌ Error en login:', err.message);
+
+    return res.status(500).json({
+      exito: false,
+      mensaje: 'Error en login',
+      error: err.message
+    });
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+});
